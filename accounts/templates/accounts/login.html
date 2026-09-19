@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTÉ — Login</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+</head>
+<body class="login-page-body">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div class="login-ambient">
+        <span class="gold-orb orb-1"></span>
+        <span class="gold-orb orb-2"></span>
+        <span class="gold-orb orb-3"></span>
+    </div>
+
+    <main class="login-page">
+        <section class="login-form-side">
+            <div class="login-theme">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">☾</span>
+                </button>
+            </div>
+
+            <div class="login-form-wrapper">
+                <div class="login-light light-top"></div>
+                <div class="login-light light-right"></div>
+                <div class="login-light light-bottom"></div>
+                <div class="login-light light-left"></div>
+
+                <a href="{% url 'home' %}" class="login-logo">ART<span>É</span></a>
+
+                <div class="login-header">
+                    <div class="section-label">MEMBER ACCESS</div>
+                    <h1><em>Welcome</em></h1>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="form-error" style="margin-bottom:20px;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form class="login-form" id="loginForm" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope"></i>
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="form-error">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            {{ form.password }}
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="form-error">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember_me" id="rememberMe">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn login-btn" id="loginBtn">
+                        <span>SIGN IN</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+               
+
+                <div class="login-divider"><span>OR</span></div>
+
+                <button type="button" class="social-btn" id="googleLogin">
+                    <i class="fa-brands fa-google"></i>
+                    Continue with Google
+                </button>
+
+                <div class="login-footer">
+                    <span>Don't have an account?</span>
+                    <a href="{% url 'accounts:register' %}">Create one</a>
+                    <br>
+                    <a href="{% url 'home' %}" class="back-home">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to ARTÉ
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{% static 'home/js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggle = document.getElementById("togglePassword");
+            const password = document.getElementById("loginPassword");
+            if (toggle && password) {
+                toggle.addEventListener("click", () => {
+                    const icon = toggle.querySelector("i");
+                    if (password.type === "password") {
+                        password.type = "text";
+                        icon.classList.remove("fa-eye");
+                        icon.classList.add("fa-eye-slash");
+                    } else {
+                        password.type = "password";
+                        icon.classList.remove("fa-eye-slash");
+                        icon.classList.add("fa-eye");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

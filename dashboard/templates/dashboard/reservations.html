@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Reservations{% endblock %}
+{% block page_title %}Reservations{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <h2>All Reservations <em>({{ total_reservations }})</em></h2>
+</div>
+<article class="dashboard-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>CONTACT</th>
+                    <th>DATE / TIME</th>
+                    <th>GUESTS</th>
+                    <th>STATUS</th>
+                    <th>MESSAGE</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td><strong>{{ res.name }}</strong></td>
+                    <td>{{ res.email }}<br><small>{{ res.phone }}</small></td>
+                    <td>{{ res.date|date:"d M Y" }} · {{ res.time|time:"H:i" }}</td>
+                    <td>{{ res.guests }}</td>
+                    <td><span class="order-badge {{ res.status }}">{{ res.get_status_display }}</span></td>
+                    <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis;">{{ res.message|default:"—" }}</td>
+                    <td class="actions-cell">
+                        <form method="post" action="{% url 'dashboard:update_reservation_status' res.id %}">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()">
+                                {% for value, label in res.STATUS_CHOICES %}
+                                    <option value="{{ value }}" {% if res.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                        <form method="post" action="{% url 'dashboard:delete_reservation' res.id %}" onsubmit="return confirm('Delete reservation for {{ res.name }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding:40px;">No reservations found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

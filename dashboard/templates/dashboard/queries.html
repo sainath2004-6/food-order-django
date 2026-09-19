@@ -1,0 +1,72 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Queries{% endblock %}
+{% block page_title %}Customer Queries{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <h2>Customer Queries <em>({{ total_queries }})</em>
+        {% if pending_count %}<span class="order-badge pending" style="margin-left:10px;">{{ pending_count }} pending</span>{% endif %}
+    </h2>
+</div>
+<article class="dashboard-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>FROM</th>
+                    <th>SUBJECT</th>
+                    <th>MESSAGE</th>
+                    <th>STATUS</th>
+                    <th>DATE</th>
+                    <th>REPLY</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in queries %}
+                <tr {% if not q.is_read_by_admin %}style="background:rgba(201,162,39,0.06);"{% endif %}>
+                    <td>
+                        <strong>{{ q.name }}</strong><br>
+                        <small>{{ q.email }}</small>
+                    </td>
+                    <td>{{ q.subject }}</td>
+                    <td style="max-width:220px;">
+                        <div style="max-height:80px; overflow:auto; font-size:13px;">{{ q.message }}</div>
+                    </td>
+                    <td><span class="order-badge {{ q.status }}">{{ q.get_status_display }}</span></td>
+                    <td>{{ q.created_at|date:"d M Y H:i" }}</td>
+                    <td style="min-width:220px;">
+                        {% if q.reply %}
+                        <div style="font-size:13px; opacity:0.9; margin-bottom:8px;">{{ q.reply }}</div>
+                        <small>Replied {{ q.replied_at|date:"d M Y H:i" }}</small>
+                        {% endif %}
+                        <form method="post" action="{% url 'dashboard:reply_query' q.id %}" style="margin-top:8px;">
+                            {% csrf_token %}
+                            <textarea name="reply" rows="2" placeholder="Type reply…" style="width:100%; min-width:180px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.15); color:inherit; border-radius:8px; padding:8px; font-size:13px;" required>{% if q.reply %}{{ q.reply }}{% endif %}</textarea>
+                            <button type="submit" class="gold-button" style="margin-top:6px; padding:6px 12px; font-size:12px;">
+                                {% if q.reply %}Update reply{% else %}Send reply{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                    <td class="actions-cell">
+                        {% if not q.is_read_by_admin %}
+                        <form method="post" action="{% url 'dashboard:mark_query_read' q.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon" title="Mark read"><i class="fa-solid fa-check"></i></button>
+                        </form>
+                        {% endif %}
+                        <form method="post" action="{% url 'dashboard:delete_query' q.id %}" onsubmit="return confirm('Delete this query?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding:40px;">No queries yet. Customers can send messages from the site or member area.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

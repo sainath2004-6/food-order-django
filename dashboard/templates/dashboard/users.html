@@ -1,0 +1,68 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Users{% endblock %}
+{% block page_title %}Users{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <h2>Customers <em>({{ total_users }})</em>
+        {% if pending_count %}
+        <span style="font-size:14px; color:#c9a227; margin-left:12px;">{{ pending_count }} pending approval</span>
+        {% endif %}
+    </h2>
+</div>
+<article class="dashboard-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>EMAIL</th>
+                    <th>STATUS</th>
+                    <th>JOINED</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.get_full_name|default:user.username }}</strong></td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_active %}
+                            <span class="order-badge completed">Approved</span>
+                        {% else %}
+                            <span class="order-badge pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.date_joined|date:"d M Y" }}</td>
+                    <td class="actions-cell">
+                        {% if not user.is_active %}
+                        <form method="post" action="{% url 'dashboard:approve_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon" title="Approve">
+                                <i class="fa-solid fa-check"></i> Approve
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{% url 'dashboard:reject_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon" title="Block / set pending" style="opacity:0.85;">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form method="post" action="{% url 'dashboard:delete_user' user.id %}" onsubmit="return confirm('Delete user {{ user.email }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:40px;">No users found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

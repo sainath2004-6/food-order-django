@@ -1,0 +1,54 @@
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-brand">
+        <a href="{% url 'dashboard:admin' %}" class="brand-logo">ART<span>É</span></a>
+        <span class="brand-label">ADMINISTRATION</span>
+    </div>
+
+    <nav class="admin-nav">
+        <div class="nav-section-title">OVERVIEW</div>
+        <a href="{% url 'dashboard:admin' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'admin' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-grid-2"></i></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'dashboard:orders' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'orders' or request.resolver_match.url_name == 'update_order_status' or request.resolver_match.url_name == 'delete_order' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+            <span>Orders</span>
+        </a>
+
+        <div class="nav-section-title">MANAGEMENT</div>
+        <a href="{% url 'dashboard:menu' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'menu' or request.resolver_match.url_name == 'add_menu' or request.resolver_match.url_name == 'edit_menu' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-utensils"></i></span>
+            <span>Menu</span>
+        </a>
+        <a href="{% url 'dashboard:categories' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'categories' or request.resolver_match.url_name == 'delete_category' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-tags"></i></span>
+            <span>Categories</span>
+        </a>
+        <a href="{% url 'dashboard:users' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'delete_user' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+            <span>Users</span>
+        </a>
+        <a href="{% url 'dashboard:reservations' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'reservations' or request.resolver_match.url_name == 'update_reservation_status' or request.resolver_match.url_name == 'delete_reservation' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+            <span>Reservations</span>
+        </a>
+        <a href="{% url 'dashboard:queries' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'queries' or request.resolver_match.url_name == 'reply_query' %}active{% endif %}">
+            <span class="nav-icon"><i class="fa-solid fa-envelope"></i></span>
+            <span>Queries</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="sidebar-profile">
+            <div class="profile-avatar">A</div>
+            <div class="profile-info">
+                <strong>ARTÉ Admin</strong>
+                <span>Administrator</span>
+            </div>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="logout-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sign Out</span>
+        </a>
+    </div>
+</aside>

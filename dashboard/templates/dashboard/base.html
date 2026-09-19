@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ARTÉ — Admin{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'dashboard/css/admin.css' %}">
+    <style>
+        .form-card { max-width: 560px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display:block; margin-bottom:6px; font-size:13px; letter-spacing:0.04em; opacity:0.8; }
+        .form-group input, .form-group textarea, .form-group select {
+            width:100%; padding:12px 14px; border-radius:8px;
+            border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.25); color:inherit;
+            font-family: inherit;
+        }
+        .checkbox-label { display:flex; align-items:center; gap:10px; }
+        .form-inline { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+        .form-inline input { flex:1; min-width:200px; padding:12px 14px; border-radius:8px;
+            border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.25); color:inherit; }
+        .msg-success { margin-bottom:16px; color: #c9a227; }
+        .actions-cell { white-space: nowrap; }
+        .actions-cell form { display: inline; }
+        .actions-cell select {
+            padding:6px 8px; border-radius:6px; background:rgba(0,0,0,0.3);
+            color:inherit; border:1px solid rgba(255,255,255,0.15); font-size:12px;
+        }
+        .btn-icon {
+            display:inline-flex; align-items:center; justify-content:center;
+            padding:6px 10px; font-size:12px; border:none; cursor:pointer;
+            border-radius:8px; text-decoration:none;
+        }
+        .btn-danger { background:#8b3a3a !important; color:#fff !important; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+    <div class="admin-background">
+        <div class="ambient-light ambient-one"></div>
+        <div class="ambient-light ambient-two"></div>
+        <div class="ambient-light ambient-three"></div>
+    </div>
+
+    <div class="admin-app">
+        {% include 'dashboard/sidebar.html' %}
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-title">
+                    <span class="eyebrow">ARTÉ / ADMIN</span>
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+                <div class="topbar-actions">
+                    {% block topbar_actions %}{% endblock %}
+                </div>
+            </header>
+
+            <section class="admin-page active">
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="msg-success">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+    <script src="{% static 'dashboard/js/admin.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

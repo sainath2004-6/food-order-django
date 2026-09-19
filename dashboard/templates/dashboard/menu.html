@@ -1,0 +1,66 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Menu{% endblock %}
+{% block page_title %}Menu{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'dashboard:add_menu' %}" class="gold-button">
+    <i class="fa-solid fa-plus"></i> Add Menu Item
+</a>
+{% endblock %}
+{% block content %}
+<article class="dashboard-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>CATEGORY</th>
+                    <th>PRICE</th>
+                    <th>AVAILABLE</th>
+                    <th>CREATED</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td>{{ item.category.name }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>
+                        {% if item.is_available %}
+                            <span class="order-badge completed">Yes</span>
+                        {% else %}
+                            <span class="order-badge pending">No</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.created_at|date:"d M Y" }}</td>
+                    <td class="actions-cell">
+                        <a href="{% url 'dashboard:edit_menu' item.id %}" class="gold-button btn-icon" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <form method="post" action="{% url 'dashboard:toggle_menu' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon" title="Toggle availability">
+                                <i class="fa-solid fa-toggle-{% if item.is_available %}on{% else %}off{% endif %}"></i>
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'dashboard:delete_menu' item.id %}" onsubmit="return confirm('Delete {{ item.name }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:40px;">
+                        No menu items yet. <a href="{% url 'dashboard:add_menu' %}">Add one</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

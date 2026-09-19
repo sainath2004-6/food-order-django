@@ -1,0 +1,640 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTÉ — Customer Home</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root { --bg:#0a0a0a; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.1); --gold:#c9a227; --text:#f5f5f5; }
+        * { box-sizing: border-box; }
+        body { margin:0; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+        .wrap { max-width:1100px; margin:0 auto; padding:28px 20px 100px; }
+        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:36px; flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--border); padding-bottom:20px; }
+        .top a { color:inherit; text-decoration:none; opacity:0.75; margin-left:14px; font-size:14px; }
+        .top a:hover { opacity:1; color:var(--gold); }
+        .logo { font-family:'Playfair Display',serif; font-size:1.6rem; opacity:1 !important; margin-left:0 !important; }
+        .logo span { color:var(--gold); }
+        .badge-live { font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); border:1px solid rgba(201,162,39,0.35); padding:4px 10px; border-radius:999px; }
+        h1 { font-family:'Playfair Display',serif; font-weight:400; margin:0 0 8px; font-size:2rem; }
+        .sub { opacity:0.6; margin:0 0 24px; }
+        h2 { font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin:40px 0 18px; }
+        .search-row { display:flex; gap:10px; margin-bottom:20px; }
+        .search-row input {
+            flex:1; background:var(--card); border:1px solid var(--border); border-radius:10px;
+            padding:12px 16px; color:var(--text); font-size:14px; outline:none;
+        }
+        .search-row input:focus { border-color:var(--gold); }
+        .dishes { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px; }
+        .dish { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+        .dish.hidden { display:none; }
+        .dish img { width:100%; height:150px; object-fit:cover; background:#1a1a1a; }
+        .dish-body { padding:16px; flex:1; display:flex; flex-direction:column; }
+        .cat { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; opacity:0.45; margin-bottom:6px; }
+        .dish-body h3 { font-family:'Playfair Display',serif; font-size:1.1rem; margin:0 0 6px; font-weight:400; }
+        .dish-body p { font-size:13px; opacity:0.65; margin:0 0 12px; line-height:1.45; flex:1; }
+        .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .price { color:var(--gold); font-weight:600; }
+        .add-btn {
+            border:none; background:var(--gold); color:#0a0a0a; font-weight:600;
+            padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px;
+        }
+        .add-btn:hover { filter:brightness(1.08); }
+        .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; }
+        table { width:100%; border-collapse:collapse; font-size:14px; }
+        th { text-align:left; font-size:11px; letter-spacing:0.1em; opacity:0.45; padding:10px 8px; border-bottom:1px solid var(--border); }
+        td { padding:14px 8px; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; }
+        .status {
+            display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px;
+            text-transform:uppercase; letter-spacing:0.04em; background:rgba(201,162,39,0.15); color:var(--gold);
+        }
+        .status.confirmed, .status.completed, .status.ready, .status.replied { background:rgba(80,180,120,0.15); color:#6dca9a; }
+        .status.cancelled, .status.closed { background:rgba(180,80,80,0.15); color:#e08a8a; }
+        .status.preparing, .status.pending { background:rgba(100,140,220,0.15); color:#8ab0e8; }
+        .empty { opacity:0.5; padding:20px 0; margin:0; }
+        .notif-panel {
+            background:rgba(201,162,39,0.08); border:1px solid rgba(201,162,39,0.35);
+            border-radius:14px; padding:16px 18px; margin-bottom:24px;
+        }
+        .notif-panel h3 {
+            margin:0 0 12px; font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+            color:var(--gold); display:flex; align-items:center; gap:8px;
+        }
+        .notif-item {
+            display:flex; align-items:flex-start; gap:12px; padding:10px 0;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .notif-item:last-child { border-bottom:none; padding-bottom:0; }
+        .notif-item i { color:var(--gold); margin-top:3px; width:18px; text-align:center; }
+        .notif-item .title { font-weight:600; font-size:14px; margin-bottom:2px; }
+        .notif-item .body { font-size:13px; opacity:0.75; }
+        .cart-bar {
+            position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+            background:#141414; border:1px solid var(--border); border-radius:14px;
+            padding:12px 18px; display:none; align-items:center; gap:16px;
+            box-shadow:0 12px 40px rgba(0,0,0,0.5); z-index:50; min-width:280px;
+        }
+        .cart-bar.show { display:flex; }
+        .cart-bar strong { color:var(--gold); }
+        .cart-bar button {
+            margin-left:auto; background:var(--gold); border:none; color:#0a0a0a;
+            font-weight:600; padding:10px 16px; border-radius:8px; cursor:pointer;
+        }
+        .note { font-size:13px; opacity:0.5; margin-top:8px; }
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        @media (max-width:720px) { .grid-2 { grid-template-columns:1fr; } }
+        label { display:block; font-size:12px; opacity:0.6; margin-bottom:6px; }
+        input, select, textarea {
+            width:100%; background:rgba(0,0,0,0.25); border:1px solid var(--border);
+            border-radius:10px; padding:11px 14px; color:var(--text); font-size:14px; margin-bottom:12px;
+        }
+        input:focus, select:focus, textarea:focus { outline:none; border-color:var(--gold); }
+        .btn-gold {
+            background:var(--gold); color:#0a0a0a; border:none; font-weight:600;
+            padding:12px 20px; border-radius:10px; cursor:pointer; font-size:14px;
+        }
+        .flash { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:14px; border:1px solid rgba(201,162,39,0.35); }
+        .flash.success { background:rgba(80,180,120,0.12); }
+        .flash.error { background:rgba(180,80,80,0.12); }
+        .reply-box { margin-top:8px; padding:10px 12px; background:rgba(201,162,39,0.08); border-radius:8px; font-size:13px; border-left:3px solid var(--gold); }
+        .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+        .tabs a {
+            padding:8px 14px; border-radius:999px; border:1px solid var(--border);
+            text-decoration:none; color:inherit; font-size:13px; opacity:0.8;
+        }
+        .tabs a:hover, .tabs a.active { border-color:var(--gold); color:var(--gold); opacity:1; }
+    
+        body.no-scroll { overflow: hidden; }
+        .cart-overlay {
+            position: fixed; inset: 0; z-index: 7000;
+            background: rgba(0,0,0,.58); backdrop-filter: blur(5px);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity .4s ease, visibility .4s ease;
+        }
+        .cart-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
+        .cart-sidebar {
+            position: fixed; top: 0; right: 0; width: min(450px, 100%); height: 100vh;
+            z-index: 8000; display: flex; flex-direction: column;
+            background: #111; border-left: 1px solid var(--border);
+            transform: translateX(100%); transition: transform .5s cubic-bezier(0.22,1,0.36,1);
+        }
+        .cart-sidebar.open { transform: translateX(0); }
+        .cart-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 25px; border-bottom: 1px solid var(--border);
+        }
+        .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; }
+        .cart-header button {
+            width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 50%;
+            background: transparent; color: var(--text); cursor: pointer; font-size: 18px;
+        }
+        .cart-header button:hover { border-color: var(--gold); color: var(--gold); }
+        .cart-items { flex: 1; overflow-y: auto; padding: 25px; }
+        .cart-item {
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            padding: 18px 0; border-bottom: 1px solid var(--border);
+        }
+        .cart-item-info h3 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; }
+        .cart-item-info p { margin-top: 4px; color: var(--gold); font-size: 13px; }
+        .cart-item-controls { display: flex; align-items: center; gap: 6px; }
+        .cart-item-controls button {
+            width: 28px; height: 28px; border: 1px solid var(--border); background: transparent;
+            color: var(--text); cursor: pointer; border-radius: 6px; font-size: 14px;
+        }
+        .cart-item-controls button:hover { background: var(--text); color: var(--bg); }
+        .cart-item-controls span { min-width: 22px; text-align: center; font-size: 13px; }
+        .empty-cart { padding: 60px 20px; text-align: center; opacity: 0.7; }
+        .empty-cart-icon { font-size: 42px; color: var(--gold); margin-bottom: 16px; font-family: 'Playfair Display', serif; }
+        .empty-cart h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 8px; color: var(--text); }
+        .cart-footer { padding: 22px 25px 28px; border-top: 1px solid var(--border); }
+        .cart-total { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .cart-total span { opacity: 0.55; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .cart-total strong { color: var(--gold); font-size: 20px; }
+        .cart-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 90;
+            display: none; align-items: center; gap: 8px;
+            background: #141414; border: 1px solid var(--border); border-radius: 999px;
+            padding: 12px 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); cursor: pointer; font-size: 14px;
+            color: var(--text);
+        }
+        .cart-fab.show { display: flex; }
+        .cart-fab strong { color: var(--gold); }
+        .cart-fab:hover { border-color: rgba(201,162,39,0.4); }
+        .header-cart-btn {
+            border: 1px solid var(--border); background: transparent; color: var(--text);
+            border-radius: 999px; padding: 8px 14px; cursor: pointer; font-size: 13px;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .header-cart-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .header-cart-btn b {
+            background: var(--gold); color: #0a0a0a; border-radius: 999px;
+            min-width: 18px; height: 18px; font-size: 11px; display: inline-flex;
+            align-items: center; justify-content: center; padding: 0 5px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <a href="{% url 'accounts:customer_home' %}" class="logo">ART<span>É</span></a>
+            <span class="badge-live">Member area</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="header-cart-btn" id="openCartHeader" aria-label="Open cart">
+                Cart <b id="cartCountBadge">0</b>
+            </button>
+            <a href="{% url 'accounts:profile' %}">Profile</a>
+            <a href="{% url 'home' %}">Public site</a>
+            <a href="{% url 'accounts:logout' %}">Sign out</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="flash {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if notifications %}
+    <div class="notif-panel" id="statusNotifications">
+        <h3><i class="fa-solid fa-bell"></i> Updates from ARTÉ</h3>
+        {% for n in notifications %}
+        <div class="notif-item">
+            <i class="fa-solid {% if n.type == 'order' %}fa-bag-shopping{% else %}fa-calendar-check{% endif %}"></i>
+            <div>
+                <div class="title">{{ n.title }}</div>
+                <div class="body">{{ n.body }} <span class="status {{ n.status }}">{{ n.status }}</span></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1>Welcome, {{ user.first_name|default:user.email }}</h1>
+    <p class="sub">Order dishes, reserve a table, track orders, and message the team — this is your member home.</p>
+
+    <div class="tabs">
+        <a href="#dishes" class="active">Dishes</a>
+        <a href="#reserve">Reserve table</a>
+        <a href="#reservations">My reservations</a>
+        <a href="#orders">Orders</a>
+        <a href="#queries">Messages</a>
+    </div>
+
+    <h2 id="dishes">Available dishes</h2>
+    <div class="search-row">
+        <input type="search" id="dishSearch" placeholder="Search dishes by name or category…" autocomplete="off">
+    </div>
+    <div class="dishes" id="dishGrid">
+        {% for item in dishes %}
+        <article class="dish" data-search="{{ item.name|lower }} {{ item.category.name|lower }} {{ item.description|lower }}">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80" alt="{{ item.name }}">
+            {% endif %}
+            <div class="dish-body">
+                <div class="cat">{{ item.category.name }}</div>
+                <h3>{{ item.name }}</h3>
+                <p>{{ item.description|truncatewords:16|default:"Chef's selection" }}</p>
+                <div class="row">
+                    <span class="price">₹{{ item.price }}</span>
+                    <button type="button" class="add-btn"
+                        data-id="{{ item.id }}"
+                        data-name="{{ item.name }}"
+                        data-price="{{ item.price }}">
+                        + Add
+                    </button>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <p class="empty">No dishes available. Ask admin to add menu items.</p>
+        {% endfor %}
+    </div>
+
+    <h2 id="reserve">Reserve a table</h2>
+    <div class="card">
+        <form method="post" action="{% url 'place_reservation' %}">
+            {% csrf_token %}
+            <div class="grid-2">
+                <div>
+                    <label>Name</label>
+                    <input type="text" name="name" value="{{ user.get_full_name|default:user.first_name }}" required>
+                </div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div>
+                    <label>Phone</label>
+                    <input type="text" name="phone" placeholder="+91 …">
+                </div>
+                <div>
+                    <label>Guests</label>
+                    <select name="guests">
+                        <option value="1">1 Guest</option>
+                        <option value="2" selected>2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5">5 Guests</option>
+                        <option value="6">6+ Guests</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div>
+                    <label>Time</label>
+                    <input type="time" name="time" required>
+                </div>
+            </div>
+            <label>Special request</label>
+            <textarea name="special_request" rows="2" placeholder="Anything we should know?"></textarea>
+            <button type="submit" class="btn-gold">Request reservation</button>
+        </form>
+    </div>
+
+    <h2 id="reservations">Your table reservations</h2>
+    <div class="card">
+        {% if reservations %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Guests</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                <tr>
+                    <td><strong>{{ r.date|date:"d M Y" }}</strong></td>
+                    <td>{{ r.time|time:"H:i" }}</td>
+                    <td>{{ r.guests }}</td>
+                    <td><span class="status {{ r.status }}">{{ r.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">No reservations yet. Use the form above or the <a href="{% url 'home' %}#reservation" style="color:var(--gold)">public site</a>.</p>
+        {% endif %}
+    </div>
+
+    <h2 id="orders">Your recent orders</h2>
+    <div class="card">
+        {% if orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Address</th>
+                    <th>Payment</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr>
+                    <td><strong>#{{ o.order_id }}</strong></td>
+                    <td style="font-size:12px;max-width:140px;">{{ o.delivery_address|default:"—" }}</td>
+                    <td style="font-size:12px;">{{ o.get_payment_method_display }}<br><span class="status {{ o.payment_status }}">{{ o.get_payment_status_display }}</span></td>
+                    <td>₹{{ o.total }}</td>
+                    <td><span class="status {{ o.status }}">{{ o.get_status_display }}</span></td>
+                    <td>{{ o.created_at|date:"d M Y, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">No orders yet. Add dishes above and place an order.</p>
+        {% endif %}
+    </div>
+
+    <h2 id="queries">Messages to ARTÉ</h2>
+    <div class="card" style="margin-bottom:20px;">
+        <form method="post" action="{% url 'place_query' %}">
+            {% csrf_token %}
+            <input type="hidden" name="name" value="{{ user.get_full_name|default:user.first_name }}">
+            <input type="hidden" name="email" value="{{ user.email }}">
+            <label>Subject</label>
+            <input type="text" name="subject" placeholder="Subject (optional)">
+            <label>Your message</label>
+            <textarea name="message" rows="3" placeholder="Ask about menu, allergies, private events…" required></textarea>
+            <button type="submit" class="btn-gold">Send to admin</button>
+        </form>
+    </div>
+    <div class="card">
+        {% if queries %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Your message</th>
+                    <th>Admin reply</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in queries %}
+                <tr>
+                    <td><strong>{{ q.subject }}</strong></td>
+                    <td style="max-width:200px;font-size:13px;">{{ q.message|truncatewords:30 }}</td>
+                    <td>
+                        {% if q.reply %}
+                        <div class="reply-box">{{ q.reply }}</div>
+                        {% else %}
+                        <span style="opacity:0.45;">Waiting for reply…</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="status {{ q.status }}">{{ q.get_status_display }}</span></td>
+                    <td>{{ q.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">No messages yet. Send one above — admin replies will show here.</p>
+        {% endif %}
+    </div>
+    
+</div>
+
+
+<!-- Cart overlay (same as public site) -->
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<!-- Cart sidebar (same as public site) -->
+<aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h2>Your Table</h2>
+        <button type="button" aria-label="Close cart" id="cartClose">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <div class="cart-total">
+            <span>Total</span>
+            <strong id="cartTotalDisplay">₹0.00</strong>
+        </div>
+        <div class="guest-order-fields" style="margin:12px 0 16px;display:flex;flex-direction:column;gap:8px;">
+            <label style="margin:0;">Phone *</label>
+            <input type="tel" id="coPhone" placeholder="Phone number" required style="margin:0;">
+            <label style="margin:0;">Delivery address *</label>
+            <textarea id="coAddress" rows="2" placeholder="Full delivery address" required style="margin:0;"></textarea>
+            <label style="margin:0;">Payment method</label>
+            <select id="coPayment" style="margin:0;">
+                <option value="cod">Cash on delivery</option>
+                <option value="cod">UPI</option>
+                <option value="cod">Card</option>
+                
+            </select>
+        </div>
+        <button type="button" class="btn-gold" id="placeOrderBtn" style="width:100%;">Place Order</button>
+    </div>
+</aside>
+
+<!-- Floating cart shortcut -->
+<button type="button" class="cart-fab" id="cartFab" aria-label="Open cart">
+    <span><span id="cartFabCount">0</span> item(s) · <strong>₹<span id="cartFabTotal">0</span></strong></span>
+    <span style="margin-left:8px;">Open cart →</span>
+</button>
+
+<script>
+(function () {
+    const CART_KEY = 'arteCart';
+    let cart = [];
+    try { cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { cart = []; }
+
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartItems = document.getElementById('cartItems');
+    const cartFab = document.getElementById('cartFab');
+    const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+    const cartFabCount = document.getElementById('cartFabCount');
+    const cartFabTotal = document.getElementById('cartFabTotal');
+
+    function getCsrf() {
+        const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+        if (m) return decodeURIComponent(m[1]);
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    function escapeHTML(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function openCart() {
+        if (!cartSidebar) return;
+        cartSidebar.classList.add('open');
+        if (cartOverlay) cartOverlay.classList.add('open');
+        document.body.classList.add('no-scroll');
+        renderCart();
+    }
+
+    function closeCart() {
+        if (!cartSidebar) return;
+        cartSidebar.classList.remove('open');
+        if (cartOverlay) cartOverlay.classList.remove('open');
+        document.body.classList.remove('no-scroll');
+    }
+
+    function save() {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        renderCart();
+    }
+
+    function renderCart() {
+        const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
+        const total = cart.reduce((s, i) => s + (i.price || 0) * (i.quantity || 0), 0);
+
+        if (cartTotalDisplay) cartTotalDisplay.textContent = '₹' + total.toFixed(2);
+        if (cartFabCount) cartFabCount.textContent = count;
+        if (cartFabTotal) cartFabTotal.textContent = total.toFixed(2);
+        if (cartFab) cartFab.classList.toggle('show', count > 0);
+
+        // header badge if present
+        const badge = document.getElementById('cartCountBadge');
+        if (badge) badge.textContent = count;
+
+        if (!cartItems) return;
+
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">◇</div><h3>Your table is waiting.</h3><p>Add something beautiful to your order.</p></div>';
+            return;
+        }
+
+        cartItems.innerHTML = '';
+        cart.forEach((item, index) => {
+            const el = document.createElement('div');
+            el.className = 'cart-item';
+            el.innerHTML = '<div class="cart-item-info"><h3>' + escapeHTML(item.name) + '</h3><p>₹' + Number(item.price).toFixed(2) + '</p></div>' +
+                '<div class="cart-item-controls">' +
+                '<button type="button" class="quantity-minus" data-index="' + index + '">−</button>' +
+                '<span>' + item.quantity + '</span>' +
+                '<button type="button" class="quantity-plus" data-index="' + index + '">+</button>' +
+                '<button type="button" class="remove-item" data-index="' + index + '" aria-label="Remove">×</button>' +
+                '</div>';
+            cartItems.appendChild(el);
+        });
+
+        cartItems.querySelectorAll('.quantity-minus').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.dataset.index);
+                if (!cart[i]) return;
+                if (cart[i].quantity > 1) cart[i].quantity--;
+                else cart.splice(i, 1);
+                save();
+            });
+        });
+        cartItems.querySelectorAll('.quantity-plus').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.dataset.index);
+                if (!cart[i]) return;
+                cart[i].quantity++;
+                save();
+            });
+        });
+        cartItems.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.dataset.index);
+                if (!cart[i]) return;
+                cart.splice(i, 1);
+                save();
+            });
+        });
+    }
+
+    document.getElementById('cartClose')?.addEventListener('click', closeCart);
+    cartOverlay?.addEventListener('click', closeCart);
+    cartFab?.addEventListener('click', openCart);
+    document.getElementById('openCartHeader')?.addEventListener('click', openCart);
+
+    document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            const price = parseFloat(btn.dataset.price) || 0;
+            const existing = cart.find(i => String(i.id) === String(id) || i.name === name);
+            if (existing) existing.quantity += 1;
+            else cart.push({ id, name, price, quantity: 1 });
+            save();
+            openCart(); // open full cart when adding — matches public UX
+            btn.textContent = '✓ Added';
+            setTimeout(() => { btn.textContent = '+ Add'; }, 900);
+        });
+    });
+
+    document.getElementById('placeOrderBtn')?.addEventListener('click', async () => {
+        if (!cart.length) { alert('Your cart is empty.'); return; }
+        const phone = (document.getElementById('coPhone') || {}).value || '';
+        const address = (document.getElementById('coAddress') || {}).value || '';
+        if (!phone.trim()) { alert('Please enter phone number'); return; }
+        if (!address.trim()) { alert('Please enter delivery address'); return; }
+        const btn = document.getElementById('placeOrderBtn');
+        btn.disabled = true;
+        btn.textContent = 'Placing…';
+        try {
+            const res = await fetch('/api/order/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrf(),
+                },
+                body: JSON.stringify({
+                    items: cart,
+                    customer_name: '{{ user.get_full_name|default:user.email|escapejs }}',
+                    customer_email: '{{ user.email|escapejs }}',
+                    customer_phone: phone.trim(),
+                    delivery_address: address.trim(),
+                    payment_method: (document.getElementById('coPayment') || {}).value || 'cod',
+                }),
+            });
+            const data = await res.json();
+            if (res.ok && data.ok) {
+                cart = [];
+                save();
+                closeCart();
+                alert('Order placed! #' + data.order_id + ' — ₹' + data.total +
+                    (data.payment_method ? '\nPayment: ' + data.payment_method + ' (' + data.payment_status + ')' : ''));
+                location.reload();
+            } else {
+                alert(data.error || 'Could not place order');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Network error placing order');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Place Order';
+        }
+    });
+
+    const search = document.getElementById('dishSearch');
+    if (search) {
+        search.addEventListener('input', () => {
+            const q = search.value.trim().toLowerCase();
+            document.querySelectorAll('.dish').forEach(el => {
+                const hay = el.getAttribute('data-search') || '';
+                el.classList.toggle('hidden', q && !hay.includes(q));
+            });
+        });
+    }
+
+    renderCart();
+})();
+</script>
+</body>
+</html>

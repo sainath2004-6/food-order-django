@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTÉ — Create Account</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+</head>
+<body class="login-page-body">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div class="login-ambient">
+        <span class="gold-orb orb-1"></span>
+        <span class="gold-orb orb-2"></span>
+        <span class="gold-orb orb-3"></span>
+    </div>
+
+    <main class="login-page">
+        <section class="login-form-side">
+            <div class="login-theme">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">☾</span>
+                </button>
+            </div>
+
+            <div class="login-form-wrapper">
+                <div class="login-light light-top"></div>
+                <div class="login-light light-right"></div>
+                <div class="login-light light-bottom"></div>
+                <div class="login-light light-left"></div>
+
+                <a href="{% url 'home' %}" class="login-logo">ART<span>É</span></a>
+
+                <div class="login-header">
+                    <div class="section-label">MEMBER REGISTRATION</div>
+                    <h1>Join<br><em>ARTÉ.</em></h1>
+                    <p>Create your account and begin your ARTÉ experience.</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="form-error" style="margin-bottom:20px;">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form class="login-form" id="registerForm" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            {{ form.full_name }}
+                        </div>
+                        {% if form.full_name.errors %}
+                            <div class="form-error">{{ form.full_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope"></i>
+                            {{ form.email }}
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="form-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            {{ form.password1 }}
+                            <button type="button" class="toggle-password" id="toggleRegisterPassword">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                            <div class="form-error">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            {{ form.password2 }}
+                            <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                            <div class="form-error">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-options register-terms">
+                        <label class="remember-me">
+                            <input type="checkbox" id="terms" required>
+                            <span>I agree to the ARTÉ terms & privacy policy.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn login-btn" id="registerBtn">
+                        <span>CREATE ACCOUNT</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="login-divider"><span>OR</span></div>
+
+                <button type="button" class="social-btn" id="googleRegister">
+                    <i class="fa-brands fa-google"></i>
+                    Continue with Google
+                </button>
+
+                <div class="login-footer">
+                    <span>Already a member?</span>
+                    <a href="{% url 'accounts:login' %}">Sign in</a>
+                    <br>
+                    <a href="{% url 'home' %}" class="back-home">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to ARTÉ
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{% static 'home/js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            function setupPasswordToggle(buttonId, inputId) {
+                const button = document.getElementById(buttonId);
+                const input = document.getElementById(inputId);
+                if (!button || !input) return;
+                button.addEventListener("click", () => {
+                    const icon = button.querySelector("i");
+                    if (input.type === "password") {
+                        input.type = "text";
+                        icon.classList.remove("fa-eye");
+                        icon.classList.add("fa-eye-slash");
+                    } else {
+                        input.type = "password";
+                        icon.classList.remove("fa-eye-slash");
+                        icon.classList.add("fa-eye");
+                    }
+                });
+            }
+            setupPasswordToggle("toggleRegisterPassword", "registerPassword");
+            setupPasswordToggle("toggleConfirmPassword", "confirmPassword");
+        });
+    </script>
+</body>
+</html>

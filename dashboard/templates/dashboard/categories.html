@@ -1,0 +1,46 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Categories{% endblock %}
+{% block page_title %}Categories{% endblock %}
+{% block content %}
+<article class="dashboard-card">
+    <h2 style="margin-bottom:16px;">Add Category</h2>
+    <form method="post" class="form-inline">
+        {% csrf_token %}
+        <input type="text" name="name" required placeholder="e.g. Starters, Mains, Desserts">
+        <button type="submit" class="gold-button"><i class="fa-solid fa-plus"></i> Add</button>
+    </form>
+</article>
+<article class="dashboard-card" style="margin-top:24px;">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>SLUG</th>
+                    <th>ITEMS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td><strong>{{ cat.name }}</strong></td>
+                    <td>{{ cat.slug }}</td>
+                    <td>{{ cat.items.count }}</td>
+                    <td class="actions-cell">
+                        <form method="post" action="{% url 'dashboard:delete_category' cat.id %}" onsubmit="return confirm('Delete category {{ cat.name }} and all its items?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center; padding:40px;">No categories yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

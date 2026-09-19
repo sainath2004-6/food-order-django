@@ -1,0 +1,385 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTÉ — Admin Dashboard</title>
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- ADMIN CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/css/admin.css' %}">
+</head>
+
+<body>
+
+    <!-- CUSTOM CURSOR -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <!-- BACKGROUND EFFECTS -->
+    <div class="admin-background">
+        <div class="ambient-light ambient-one"></div>
+        <div class="ambient-light ambient-two"></div>
+        <div class="ambient-light ambient-three"></div>
+    </div>
+
+    <!-- ADMIN APPLICATION -->
+    <div class="admin-app">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar" id="adminSidebar">
+
+            <!-- BRAND -->
+            <div class="admin-brand">
+                <a href="{% url 'dashboard:admin' %}" class="brand-logo">ART<span>É</span></a>
+                <span class="brand-label">ADMINISTRATION</span>
+            </div>
+
+            <!-- NAVIGATION -->
+            <nav class="admin-nav">
+                <div class="nav-section-title">OVERVIEW</div>
+
+                <a href="{% url 'dashboard:admin' %}" class="admin-nav-link active">
+                    <span class="nav-icon"><i class="fa-solid fa-grid-2"></i></span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'dashboard:orders' %}" class="admin-nav-link">
+                    <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+                    <span>Orders</span>
+                    <span class="nav-count">{{ total_orders }}</span>
+                </a>
+
+                <div class="nav-section-title">MANAGEMENT</div>
+
+                <a href="{% url 'dashboard:menu' %}" class="admin-nav-link">
+                    <span class="nav-icon"><i class="fa-solid fa-utensils"></i></span>
+                    <span>Menu</span>
+                </a>
+
+                <a href="{% url 'dashboard:categories' %}" class="admin-nav-link">
+                    <span class="nav-icon"><i class="fa-solid fa-tags"></i></span>
+                    <span>Categories</span>
+                </a>
+
+                <a href="{% url 'dashboard:users' %}" class="admin-nav-link">
+                    <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+                    <span>Users</span>
+                </a>
+
+                <a href="{% url 'dashboard:reservations' %}" class="admin-nav-link">
+                    <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+                    <span>Reservations</span>
+                </a>
+            </nav>
+
+            <!-- SIDEBAR BOTTOM -->
+            <div class="sidebar-bottom">
+                <div class="admin-profile">
+                    <div class="profile-avatar">A</div>
+                    <div class="profile-info">
+                        <strong>ARTÉ Admin</strong>
+                        <span>Administrator</span>
+                    </div>
+                    <button class="profile-menu" id="profileMenu">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                </div>
+
+                <a href="{% url 'accounts:logout' %}" class="logout-btn" id="logoutBtn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+
+            <!-- TOPBAR -->
+            <header class="admin-topbar">
+                <button class="mobile-menu" id="mobileMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="topbar-title">
+                    <span class="eyebrow">ARTÉ / ADMIN</span>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="topbar-icon" id="searchButton" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    <button class="topbar-icon notification-btn" id="notificationButton" aria-label="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <button class="topbar-icon" id="themeButton" aria-label="Toggle theme">
+                        <i class="fa-regular fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- DASHBOARD PAGE -->
+            <section class="admin-page active" id="dashboardPage">
+
+                <!-- WELCOME -->
+                <div class="welcome-row">
+                    <div>
+                        <p class="section-label">
+                            {{ today|date:"l · d F Y"|upper }}
+                        </p>
+                        <h2>
+                            Good evening,
+                            <em>Admin.</em>
+                        </h2>
+                        <p class="welcome-text">
+                            Here's what's happening across ARTÉ today.
+                        </p>
+                    </div>
+
+                    <a href="{% url 'dashboard:add_menu' %}" class="gold-button">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Menu Item
+                    </a>
+                </div>
+
+                <!-- STAT CARDS -->
+                <div class="stats-grid">
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">TOTAL REVENUE</span>
+                            <span class="stat-icon">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </span>
+                        </div>
+                        <div class="stat-value">
+                            ₹{{ total_revenue|floatformat:0 }}
+                        </div>
+                        <div class="stat-footer">
+                            <span class="positive">
+                                <i class="fa-solid fa-arrow-up"></i> 12.8%
+                            </span>
+                            <span>vs last month</span>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">ORDERS</span>
+                            <span class="stat-icon">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </span>
+                        </div>
+                        <div class="stat-value">
+                            {{ total_orders }}
+                        </div>
+                        <div class="stat-footer">
+                            <span class="positive">
+                                <i class="fa-solid fa-arrow-up"></i> 8.4%
+                            </span>
+                            <span>vs last month</span>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">CUSTOMERS</span>
+                            <span class="stat-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+                        </div>
+                        <div class="stat-value">
+                            {{ total_customers }}
+                        </div>
+                        <div class="stat-footer">
+                            <span class="positive">
+                                <i class="fa-solid fa-arrow-up"></i> 5.2%
+                            </span>
+                            <span>vs last month</span>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">AVERAGE ORDER</span>
+                            <span class="stat-icon">
+                                <i class="fa-solid fa-chart-simple"></i>
+                            </span>
+                        </div>
+                        <div class="stat-value">
+                            ₹{{ avg_order|floatformat:0 }}
+                        </div>
+                        <div class="stat-footer">
+                            <span class="positive">
+                                <i class="fa-solid fa-arrow-up"></i> 3.7%
+                            </span>
+                            <span>vs last month</span>
+                        </div>
+                    </article>
+
+                </div>
+
+                <!-- LOWER GRID -->
+                <div class="dashboard-grid">
+
+                    <!-- REVENUE CHART -->
+                    <article class="dashboard-card revenue-card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-label">PERFORMANCE</span>
+                                <h3>Revenue overview</h3>
+                            </div>
+                            <select class="period-select">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                            </select>
+                        </div>
+
+                        <div class="chart-area">
+                            <div class="chart-y">
+                                <span>₹20k</span>
+                                <span>₹15k</span>
+                                <span>₹10k</span>
+                                <span>₹5k</span>
+                                <span>₹0</span>
+                            </div>
+
+                            <div class="chart">
+                                <div class="chart-grid"></div>
+                                <svg viewBox="0 0 700 260" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-opacity=".28"/>
+                                            <stop offset="100%" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path class="chart-fill" d="M0,210 C55,190 70,175 120,185 C165,195 190,145 240,155 C290,165 315,105 365,125 C410,145 440,75 485,95 C530,115 550,50 600,70 C640,85 665,40 700,50 L700,260 L0,260 Z"></path>
+                                    <path class="chart-line" d="M0,210 C55,190 70,175 120,185 C165,195 190,145 240,155 C290,165 315,105 365,125 C410,145 440,75 485,95 C530,115 550,50 600,70 C640,85 665,40 700,50"></path>
+                                </svg>
+                                <div class="chart-days">
+                                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ORDER STATUS -->
+                    <article class="dashboard-card order-card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-label">LIVE</span>
+                                <h3>Order status</h3>
+                            </div>
+                            <span class="live-indicator"><i></i> LIVE</span>
+                        </div>
+
+                        <div class="order-status">
+                            <div class="status-row">
+                                <div class="status-info">
+                                    <span class="status-dot pending"></span>
+                                    <span>Pending</span>
+                                </div>
+                                <strong>{{ pending_count }}</strong>
+                            </div>
+
+                            <div class="status-row">
+                                <div class="status-info">
+                                    <span class="status-dot preparing"></span>
+                                    <span>Preparing</span>
+                                </div>
+                                <strong>{{ preparing_count }}</strong>
+                            </div>
+
+                            <div class="status-row">
+                                <div class="status-info">
+                                    <span class="status-dot ready"></span>
+                                    <span>Ready</span>
+                                </div>
+                                <strong>{{ ready_count }}</strong>
+                            </div>
+
+                            <div class="status-row">
+                                <div class="status-info">
+                                    <span class="status-dot completed"></span>
+                                    <span>Completed</span>
+                                </div>
+                                <strong>{{ completed_count }}</strong>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+
+                <!-- RECENT ORDERS -->
+                <article class="dashboard-card recent-orders">
+                    <div class="card-header">
+                        <div>
+                            <span class="card-label">ACTIVITY</span>
+                            <h3>Recent orders</h3>
+                        </div>
+                        <a href="{% url 'dashboard:orders' %}">
+                            View all <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ORDER</th>
+                                    <th>CUSTOMER</th>
+                                    <th>ITEMS</th>
+                                    <th>TOTAL</th>
+                                    <th>STATUS</th>
+                                    <th>TIME</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>#{{ order.order_id }}</strong></td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>{{ order.items.count }} items</td>
+                                    <td>₹{{ order.total }}</td>
+                                    <td>
+                                        <span class="order-badge {{ order.status }}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.created_at|timesince }} ago</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">
+                                        No orders yet
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- ADMIN JS -->
+    <script src="{% static 'dashboard/js/admin.js' %}"></script>
+</body>
+</html>

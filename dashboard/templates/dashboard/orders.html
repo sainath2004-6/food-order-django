@@ -1,0 +1,72 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}ARTÉ — Orders{% endblock %}
+{% block page_title %}Orders{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <h2>All Orders <em>({{ total_orders }})</em></h2>
+</div>
+<article class="dashboard-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ORDER</th>
+                    <th>CUSTOMER</th>
+                    <th>ADDRESS / PHONE</th>
+                    <th>ITEMS</th>
+                    <th>PAYMENT</th>
+                    <th>TOTAL</th>
+                    <th>STATUS</th>
+                    <th>DATE</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>#{{ order.order_id }}</strong></td>
+                    <td>
+                        {{ order.customer_name }}<br>
+                        <small>{{ order.customer_email }}</small>
+                    </td>
+                    <td style="max-width:180px;font-size:13px;">
+                        {{ order.delivery_address|default:"—" }}<br>
+                        <small>{{ order.customer_phone|default:"" }}</small>
+                    </td>
+                    <td>
+                        {% for item in order.items.all %}
+                        <div>{{ item.quantity }}× {{ item.item_name }}</div>
+                        {% empty %}—{% endfor %}
+                    </td>
+                    <td>
+                        <span class="order-badge">{{ order.get_payment_method_display }}</span><br>
+                        <small class="order-badge {{ order.payment_status }}">{{ order.get_payment_status_display }}</small>
+                    </td>
+                    <td><strong>₹{{ order.total }}</strong></td>
+                    <td><span class="order-badge {{ order.status }}">{{ order.get_status_display }}</span></td>
+                    <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+                    <td class="actions-cell">
+                        <form method="post" action="{% url 'dashboard:update_order_status' order.id %}">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()">
+                                {% for value, label in order.STATUS_CHOICES %}
+                                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                        <form method="post" action="{% url 'dashboard:delete_order' order.id %}" onsubmit="return confirm('Delete order #{{ order.order_id }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="gold-button btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align:center; padding:40px;">No orders found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

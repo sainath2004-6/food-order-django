@@ -1,0 +1,1445 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ARTÉ — A modern luxury dining experience."
+    >
+
+    <title>ARTÉ — Luxury Dining</title>
+
+
+    <!-- =====================================================
+         GOOGLE FONTS
+    ====================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <!-- =====================================================
+         ARTÉ CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'home/css/style.css' %}"
+    >
+
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+
+
+<body data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+
+
+    <!-- =====================================================
+         PAGE LOADER
+    ====================================================== -->
+
+    <div class="page-loader">
+
+        <div class="loader-inner">
+
+            <div class="loader-logo">
+                ARTÉ
+            </div>
+
+            <div class="loader-line"></div>
+
+        </div>
+
+    </div>
+
+    {% if messages %}
+    <div class="flash-messages" style="position:fixed;top:90px;left:50%;transform:translateX(-50%);z-index:9999;max-width:520px;width:90%;">
+        {% for message in messages %}
+        <div style="background:{% if message.tags == 'error' %}#3a1a1a{% elif message.tags == 'success' %}#1a3a2a{% else %}#1a1a2a{% endif %};border:1px solid rgba(201,162,39,0.4);color:#f5f5f5;padding:14px 18px;border-radius:12px;margin-bottom:10px;box-shadow:0 12px 40px rgba(0,0,0,0.45);font-size:14px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+    setTimeout(function(){
+        var el = document.querySelector('.flash-messages');
+        if (el) el.style.display = 'none';
+    }, 6000);
+    </script>
+    {% endif %}
+
+
+    <!-- =====================================================
+         CUSTOM CURSOR
+    ====================================================== -->
+
+    <div class="cursor-dot"></div>
+
+    <div class="cursor-circle"></div>
+
+
+    <!-- =====================================================
+         MOBILE NAVIGATION
+    ====================================================== -->
+
+    <div class="mobile-navigation">
+
+        <button
+            class="mobile-close"
+            aria-label="Close menu"
+        >
+            ×
+        </button>
+
+        <a href="#home">
+            Home
+        </a>
+
+        <a href="#signature">
+            Menu
+        </a>
+
+        <a href="#experience">
+            Experience
+        </a>
+
+        <a href="#story">
+            Our Story
+        </a>
+
+        <a href="#reservation">
+            Reservation
+        </a>
+
+        <a href="#contact">
+            Contact
+        </a>
+
+        {% if user.is_authenticated %}
+        {% if user.is_staff %}
+        <a href="{% url 'dashboard:admin' %}">Admin Dashboard</a>
+        {% else %}
+        <a href="{% url 'accounts:customer_home' %}">Customer Home</a>
+        {% endif %}
+        <a href="{% url 'accounts:profile' %}">My Profile</a>
+        <a href="{% url 'accounts:logout' %}">Sign Out</a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}">Sign In</a>
+        <a href="{% url 'accounts:register' %}">Create Account</a>
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
+
+    <header class="navbar">
+
+        <div class="container navbar-inner">
+
+
+            <!-- LOGO -->
+
+            <a
+                href="#home"
+                class="logo"
+            >
+                ART<span>É</span>
+            </a>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="nav-links">
+
+                <a
+                    href="#home"
+                    class="active"
+                >
+                    Home
+                </a>
+
+                <a href="#experience">
+                    Experience
+                </a>
+
+                <a href="#story">
+                    Story
+                </a>
+
+                <a href="#reservation">
+                    Reservation
+                </a>
+
+                {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                <a href="{% url 'dashboard:admin' %}">Dashboard</a>
+                {% else %}
+                <a href="{% url 'accounts:customer_home' %}">Dishes</a>
+                {% endif %}
+                <a href="{% url 'accounts:profile' %}">Profile</a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}">Login</a>
+                {% endif %}
+
+
+                {% if user.is_authenticated %}
+    <!-- Logged in → Show Logout -->
+    <a href="{% url 'accounts:logout' %}" class="logout-btn" title="Sign out">
+        <i class="fa-solid fa-right-from-bracket"></i>
+    </a>
+{% else %}
+    <!-- Not logged in → Show Login -->
+    <a href="{% url 'accounts:login' %}" class="login-nav-btn" title="Sign in">
+        <i class="fa-regular fa-user"></i>
+    </a>
+{% endif %}
+
+            </nav>
+
+
+            <!-- NAV ACTIONS -->
+
+            <div class="nav-actions">
+
+
+                <!-- THEME -->
+
+                <button
+                    class="theme-toggle"
+                    id="theme-toggle"
+                    aria-label="Toggle theme"
+                >
+
+                    <span class="theme-icon">
+                        ☀
+                    </span>
+
+                </button>
+
+
+                <!-- SEARCH -->
+
+                <button
+                    class="search-btn"
+                    aria-label="Search"
+                >
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </button>
+
+
+                <!-- CART -->
+
+                <button
+                    class="cart-btn"
+                    aria-label="Shopping cart"
+                >
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    <b>0</b>
+
+                </button>
+
+
+                <!-- MOBILE -->
+
+                <button
+                    class="menu-btn"
+                    aria-label="Open menu"
+                >
+
+                    <i class="fa-solid fa-bars"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         SEARCH PANEL
+    ====================================================== -->
+
+    <div class="search-panel">
+
+        <div class="search-inner">
+
+            <button
+                class="search-close"
+                aria-label="Close search"
+            >
+                ×
+            </button>
+
+            <div class="search-input-wrapper">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search our menu..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <div class="search-results" id="searchResults" style="margin-top:24px; max-height:60vh; overflow:auto;">
+                <p class="search-hint" style="opacity:0.5; font-size:14px; text-align:center;">Type to search dishes…</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CART OVERLAY
+    ====================================================== -->
+
+    <div class="cart-overlay"></div>
+
+
+    <!-- =====================================================
+         CART SIDEBAR
+    ====================================================== -->
+
+    <aside class="cart-sidebar">
+
+        <div class="cart-header">
+
+            <h2>
+                Your Table
+            </h2>
+
+            <button
+                aria-label="Close cart"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="cart-items">
+
+            <!-- JavaScript inserts items -->
+
+        </div>
+
+
+        <div class="cart-footer">
+
+            <div class="cart-total">
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    ₹0.00
+                </strong>
+
+            </div>
+
+            <div class="guest-order-fields" style="margin:12px 0; display:flex; flex-direction:column; gap:8px;">
+                <input type="text" id="guestOrderName" placeholder="Your name" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.first_name }}{% endif %}" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.25); color:inherit; font-size:14px;">
+                <input type="email" id="guestOrderEmail" placeholder="Email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.25); color:inherit; font-size:14px;">
+                <input type="tel" id="guestOrderPhone" placeholder="Phone number *" required style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.25); color:inherit; font-size:14px;">
+                <textarea id="guestOrderAddress" placeholder="Delivery address *" rows="2" required style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.25); color:inherit; font-size:14px; resize:vertical;"></textarea>
+                <label style="font-size:12px; opacity:0.7;">Payment method</label>
+                <select id="guestOrderPayment" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.25); color:inherit; font-size:14px;">
+                    <option value="cod">Cash on Delivery</option>
+                    <option value="cod">UPI</option>
+                    <option value="cod">Card</option>
+                    
+                </select>
+                <p style="font-size:12px; opacity:0.55; margin:0;">Sign in required. Address &amp; phone required to order.</p>
+            </div>
+
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+            <button class="btn cart-checkout" data-checkout type="button">
+                Place Order
+            </button>
+            {% else %}
+            <a href="{% url 'accounts:login' %}?next=/" class="btn cart-checkout" style="display:block; text-align:center; text-decoration:none;">
+                Sign in to order
+            </a>
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- =================================================
+             HERO
+        ================================================== -->
+
+        <section
+            class="hero"
+            id="home"
+        >
+
+            <div
+                class="hero-background"
+                style="
+                    background-image:
+                    url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=85');
+                "
+            ></div>
+
+
+            <div class="container">
+
+                <div class="hero-content">
+
+                    <div class="hero-eyebrow">
+
+                        <span>
+                            Fine Dining
+                        </span>
+
+                    </div>
+
+
+                    <h1 class="hero-title">
+
+                        Taste
+
+                        <br>
+
+                        <em>the</em>
+
+                        Art.
+
+                    </h1>
+
+
+                    <p class="hero-description">
+
+                        A contemporary dining experience
+                        where exceptional ingredients,
+                        thoughtful technique and timeless
+                        design meet at the table.
+
+                    </p>
+
+
+                    <div class="hero-buttons">
+
+                        <a
+                            href="#signature"
+                            class="btn"
+                        >
+                            Explore Menu
+                        </a>
+
+
+                        <a
+                            href="#reservation"
+                            class="btn btn-outline"
+                        >
+                            Reserve a Table
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-scroll">
+                Scroll to explore
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SIGNATURE MENU
+        ================================================== -->
+
+        <section
+            class="signature"
+            id="signature"
+        >
+
+            <div class="container">
+
+                <div class="signature-intro">
+
+                    <div>
+
+                        <div class="section-label">
+                            Signature Selection
+                        </div>
+
+                        <h2 class="section-title">
+
+                            Crafted
+
+                            <br>
+
+                            with intention.
+
+                        </h2>
+
+                    </div>
+
+
+                    <div class="signature-copy">
+
+                        Every plate at ARTÉ begins with
+                        exceptional ingredients.
+
+                        <br><br>
+
+                        Our menu celebrates seasonal
+                        produce, elegant technique and
+                        honest flavour — presented with
+                        the simplicity that great food
+                        deserves.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DISHES
+        ================================================== -->
+
+        <section
+            class="dishes-section"
+            id="menu"
+        >
+
+            <div class="container">
+
+                <div class="dishes-header">
+
+                    <div>
+
+                        <div class="section-label">
+                            From the Kitchen
+                        </div>
+
+                        <h2 class="section-title">
+                            Signature dishes.
+                        </h2>
+
+                    </div>
+
+
+                    <div class="slider-controls">
+
+                        <button
+                            aria-label="Previous dishes"
+                        >
+                            ←
+                        </button>
+
+                        <button
+                            aria-label="Next dishes"
+                        >
+                            →
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DISH SLIDER -->
+
+                <div class="dish-slider">
+
+                    {% for item in menu_items %}
+                    <article class="dish-card"
+                             data-id="{{ item.id }}"
+                             data-name="{{ item.name }}"
+                             data-price="{{ item.price }}">
+
+                        <div class="dish-image">
+                            {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                            {% else %}
+                            <img
+                                src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85"
+                                alt="{{ item.name }}"
+                            >
+                            {% endif %}
+                        </div>
+
+                        <div class="dish-info">
+                            <h3>{{ item.name }}</h3>
+                            <p>{{ item.description|default:item.category.name }}</p>
+                            <strong class="dish-price">₹{{ item.price }}</strong>
+                        </div>
+
+                        <button
+                            class="dish-add"
+                            data-add-cart
+                            data-id="{{ item.id }}"
+                            data-name="{{ item.name }}"
+                            data-price="{{ item.price }}"
+                            aria-label="Add {{ item.name }}"
+                        >
+                            +
+                        </button>
+
+                    </article>
+                    {% empty %}
+                    <article class="dish-card">
+                        <div class="dish-info">
+                            <h3>Menu coming soon</h3>
+                            <p>Our kitchen is preparing something special. Check back shortly.</p>
+                        </div>
+                    </article>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             EXPERIENCE
+        ================================================== -->
+
+        <section
+            class="experience"
+            id="experience"
+        >
+
+            <div class="container">
+
+                <div class="section-label">
+                    The ARTÉ Experience
+                </div>
+
+                <h2 class="section-title">
+                    More than<br>
+                    a meal.
+                </h2>
+
+
+                <div class="experience-grid">
+
+
+                    <article class="experience-item">
+
+                        <div class="experience-number">
+                            01
+                        </div>
+
+                        <h3>
+                            Seasonal
+                        </h3>
+
+                        <p>
+                            Our menu evolves with the
+                            seasons, allowing every ingredient
+                            to reach its fullest expression.
+                        </p>
+
+                    </article>
+
+
+                    <article class="experience-item">
+
+                        <div class="experience-number">
+                            02
+                        </div>
+
+                        <h3>
+                            Intentional
+                        </h3>
+
+                        <p>
+                            Every detail — from the plate
+                            to the lighting — has been
+                            considered with purpose.
+                        </p>
+
+                    </article>
+
+
+                    <article class="experience-item">
+
+                        <div class="experience-number">
+                            03
+                        </div>
+
+                        <h3>
+                            Memorable
+                        </h3>
+
+                        <p>
+                            We create experiences that stay
+                            with you long after the final
+                            course has been served.
+                        </p>
+
+                    </article>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STORY
+        ================================================== -->
+
+        <section
+            class="story-section"
+            id="story"
+        >
+
+            <div class="container">
+
+                <div class="story-grid">
+
+
+                    <div class="story-image">
+
+                        <img
+                            src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=85"
+                            alt="ARTÉ restaurant interior"
+                        >
+
+                    </div>
+
+
+                    <div class="story-content">
+
+                        <div class="section-label">
+                            Our Story
+                        </div>
+
+
+                        <h2 class="section-title">
+
+                            Where food
+
+                            <br>
+
+                            becomes art.
+
+                        </h2>
+
+
+                        <p>
+
+                            ARTÉ was born from a simple
+                            belief — dining should feel like
+                            an experience, not a transaction.
+
+                        </p>
+
+
+                        <p>
+
+                            We bring together thoughtful
+                            cooking, beautiful ingredients
+                            and an atmosphere designed to
+                            slow the world down.
+
+                        </p>
+
+
+                        <button
+                            class="btn story-button"
+                        >
+                            Discover Our Story
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STORY MODAL
+        ================================================== -->
+
+        <div class="story-modal">
+
+            <div class="story-modal-content">
+
+                <h2>
+                    The ARTÉ Story
+                </h2>
+
+
+                <p>
+                    ARTÉ began with a desire to create
+                    something simple yet unforgettable:
+                    a place where exceptional food,
+                    thoughtful design and human connection
+                    could exist around the same table.
+                </p>
+
+
+                <p>
+                    From our kitchen to your table,
+                    everything is prepared with patience,
+                    intention and respect for the ingredient.
+                </p>
+
+
+                <p>
+                    We believe luxury isn't about excess.
+
+                    It is about quality.
+
+                    It is about attention.
+
+                    It is about remembering how a moment
+                    made you feel.
+                </p>
+
+            </div>
+
+
+            <button
+                aria-label="Close story"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             RESERVATION
+        ================================================== -->
+
+        <section
+            class="reservation"
+            id="reservation"
+        >
+
+            <div class="container">
+
+                <div class="reservation-grid">
+
+
+                    <div
+                        class="reservation-image"
+                        style="
+                            background-image:
+                            url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85');
+                        "
+                    ></div>
+
+
+                    <div class="reservation-content">
+
+
+                        <div class="section-label">
+                            Reservations
+                        </div>
+
+
+                        <h2 class="section-title">
+
+                            Your table
+
+                            <br>
+
+                            awaits.
+
+                        </h2>
+
+
+                        <p class="section-description">
+
+                            Join us for an evening of
+                            thoughtful food, beautiful
+                            surroundings and unforgettable
+                            moments.
+
+                        </p>
+
+
+                        <form
+                            class="reservation-form"
+                            method="post"
+                            action="{% url 'place_reservation' %}"
+                        >
+
+                            {% csrf_token %}
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Your name"
+                                    value="{{ prefill.name|default:'' }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="you@example.com"
+                                    value="{{ prefill.email|default:'' }}"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Phone
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="+91 ..."
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Guests
+                                </label>
+
+                                <select
+                                    name="guests"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Guests
+                                    </option>
+
+                                    <option value="1">
+                                        1 Guest
+                                    </option>
+
+                                    <option value="2">
+                                        2 Guests
+                                    </option>
+
+                                    <option value="3">
+                                        3 Guests
+                                    </option>
+
+                                    <option value="4">
+                                        4 Guests
+                                    </option>
+
+                                    <option value="5">
+                                        5 Guests
+                                    </option>
+
+                                    <option value="6">
+                                        6+ Guests
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Date
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="date"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Time
+                                </label>
+
+                                <input
+                                    type="time"
+                                    name="time"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Special Request
+                                </label>
+
+                                <textarea
+                                    name="special_request"
+                                    placeholder="Anything we should know?"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="form-group full">
+                                {% if user.is_authenticated %}
+                                <button
+                                    type="submit"
+                                    class="btn"
+                                >
+                                    Request Reservation
+                                </button>
+                                {% else %}
+                                <p style="opacity:0.75; margin-bottom:12px; font-size:14px;">Sign in to reserve a table.</p>
+                                <a href="{% url 'accounts:login' %}?next=/#reservation" class="btn" style="display:inline-block; text-align:center;">
+                                    Sign in to reserve
+                                </a>
+                                {% endif %}
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TESTIMONIALS
+        ================================================== -->
+
+        <section class="testimonials">
+
+            <div class="container">
+
+                <div class="section-label">
+                    Guest Notes
+                </div>
+
+                <h2 class="section-title">
+                    What they say.
+                </h2>
+
+
+                <div class="testimonials-grid">
+
+
+                    <article class="testimonial">
+
+                        <div class="testimonial-stars">
+                            ★★★★★
+                        </div>
+
+                        <p>
+                            “An incredibly thoughtful
+                            dining experience. Every dish
+                            felt beautifully considered.”
+                        </p>
+
+                        <div class="testimonial-author">
+                            — Aanya
+                        </div>
+
+                    </article>
+
+
+                    <article class="testimonial">
+
+                        <div class="testimonial-stars">
+                            ★★★★★
+                        </div>
+
+                        <p>
+                            “The atmosphere, food and
+                            service were exceptional.
+                            ARTÉ feels completely different.”
+                        </p>
+
+                        <div class="testimonial-author">
+                            — Rohan
+                        </div>
+
+                    </article>
+
+
+                    <article class="testimonial">
+
+                        <div class="testimonial-stars">
+                            ★★★★★
+                        </div>
+
+                        <p>
+                            “Beautiful without being
+                            pretentious. The kind of place
+                            you want to return to.”
+                        </p>
+
+                        <div class="testimonial-author">
+                            — Meera
+                        </div>
+
+                    </article>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NEWSLETTER
+        ================================================== -->
+
+        <section class="newsletter">
+
+            <div class="container">
+
+                <div class="section-label">
+                    Stay Connected
+                </div>
+
+                <h2 class="section-title">
+                    From our table<br>
+                    to your inbox.
+                </h2>
+
+                <p>
+                    Receive seasonal menus,
+                    special evenings and stories
+                    from ARTÉ.
+                </p>
+
+
+                <form class="newsletter-form">
+
+                    {% csrf_token %}
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Your email address"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        aria-label="Subscribe"
+                    >
+                        →
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+
+        <!-- =================================================
+             CONTACT / QUERY
+        ================================================== -->
+
+        <section class="contact-query" id="query" style="padding:80px 0 40px;">
+            <div class="container" style="max-width:720px;margin:0 auto;">
+                <div class="section-label">Contact</div>
+                <h2 class="section-title" style="margin-bottom:12px;">Send us a message.</h2>
+                <p class="section-description" style="margin-bottom:28px;">Questions about the menu, private dining, or anything else — we reply here.</p>
+                <form method="post" action="{% url 'place_query' %}" class="reservation-form" style="display:grid;gap:16px;">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" placeholder="Your name" value="{{ prefill.name|default:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="you@example.com" value="{{ prefill.email|default:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" name="subject" placeholder="e.g. Private dining, Allergy info">
+                    </div>
+                    <div class="form-group full">
+                        <label>Message</label>
+                        <textarea name="message" rows="4" placeholder="How can we help?" required></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <button type="submit" class="btn">Send message</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    <footer id="contact">
+
+        <div class="container">
+
+            <div class="footer-grid">
+
+
+                <!-- BRAND -->
+
+                <div class="footer-brand">
+
+                    <a
+                        href="#home"
+                        class="logo"
+                    >
+                        ART<span>É</span>
+                    </a>
+
+                    <p>
+                        Contemporary dining.
+                        Thoughtful food.
+                        Beautiful moments.
+                    </p>
+
+                </div>
+
+
+                <!-- EXPLORE -->
+
+                <div>
+
+                    <div class="footer-title">
+                        Explore
+                    </div>
+
+                    <div class="footer-links">
+
+                        <a href="#home">
+                            Home
+                        </a>
+
+                        <a href="#signature">
+                            Menu
+                        </a>
+
+                        <a href="#experience">
+                            Experience
+                        </a>
+
+                        <a href="#story">
+                            Our Story
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- VISIT -->
+
+                <div>
+
+                    <div class="footer-title">
+                        Visit
+                    </div>
+
+                    <div class="footer-links">
+
+                        <a href="#">
+                            Vita, Maharashtra
+                        </a>
+
+                        <a href="#">
+                            +91 98765 43210
+                        </a>
+
+                        <a href="#">
+                            hello@arte.com
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SOCIAL -->
+
+                <div>
+
+                    <div class="footer-title">
+                        Follow
+                    </div>
+
+                    <div class="footer-links">
+
+                        <a href="#">
+                            Instagram
+                        </a>
+
+                        <a href="#">
+                            Facebook
+                        </a>
+
+                        <a href="#">
+                            Pinterest
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="footer-bottom">
+
+                <span>
+                    © 2026 ARTÉ. All rights reserved.
+                </span>
+
+                <span>
+                    Crafted with intention.
+                </span>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="{% static 'home/js/script.js' %}"></script>
+
+
+    <!-- =====================================================
+         THEME SCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const savedTheme =
+            localStorage.getItem("arteTheme");
+
+        if (savedTheme === "dark") {
+
+            document.body.classList.add(
+                "dark-mode"
+            );
+
+            const icon =
+                document.querySelector(
+                    ".theme-icon"
+                );
+
+            if (icon) {
+                icon.textContent = "☾";
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
