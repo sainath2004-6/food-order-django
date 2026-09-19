@@ -127,3 +127,32 @@ Food Order System/
 ├── requirements.txt
 ├── seed_data.py
 └── README.md
+```
+
+---
+
+## 📸 Project Screenshots
+
+### 🏠 Home Page
+
+![Home Page](screenshots/home.png)
+
+### 🍔 Food & Menu
+
+![Menu Page](screenshots/menu.png)
+
+### 📋 Food Details
+
+![Food Details](screenshots/food-details.png)
+
+### 🛒 Cart
+
+![Cart](screenshots/cart.png)
+
+### 👤 User Profile / Login
+
+![Profile](screenshots/profile.png)
+
+### ⚙️ Admin Dashboard
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
